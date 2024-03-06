@@ -1,0 +1,13 @@
+---
+- hosts: all
+  roles:
+    - geerlingguy.docker
+    - k8s-preconfig
+
+- hosts: master
+  roles:
+    - k8s-master
+
+- hosts: worker
+  roles:
+    - k8s-worker

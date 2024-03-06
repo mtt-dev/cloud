@@ -1,0 +1,13 @@
+#cloud-config
+users:
+  - nome: myuser
+    ssh-authorized-keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII17gMseS+cRPFenhdb6cv1CmfOMq++VN4ZOjWhZ+q9h my@user.com"
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    shell: /bin/bash
+
+runcmd:
+  - "sed -i '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config"
+  - "sed -i '/#PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config"
+  - "sed -i '$a AllowUsers myuser' /etc/ssh/sshd_config"
+  - "systemctl restart sshd.service"

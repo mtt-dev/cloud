@@ -1,0 +1,5 @@
+---
+- name: Worker in Cluster registrieren
+  command:
+    cmd: "{{ lookup('file', 'join-command') }}"
+    creates: /etc/kubernetes/kubelet.conf

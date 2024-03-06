@@ -1,0 +1,33 @@
+---
+- name: GPG-Schlüssel für K8S-Repositorium einspielen
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    id: 54A647F9048D5688D7DA2ABE6A030B21BA07F4FB
+
+- name: APT-Repositorium von Google hinzufügen
+  apt_repository:
+    repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+- name: Pakete installieren
+  apt:
+    name:
+      - kubelet
+      - kubectl
+      - kubeadm
+
+- name: aktualisiere /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      {% for host in groups['master'] %}
+      {{ hostvars[host].ansible_default_ipv4.address }} {{ hostvars[host].ansible_hostname }}
+      {% endfor %}
+      {% for host in groups['worker'] %}
+      {{ hostvars[host].ansible_default_ipv4.address }} {{ hostvars[host].ansible_hostname }}
+      {% endfor %}
+
+- name: Swappen deaktivieren
+  sysctl:
+    name: vm.swappiness
+    value: '0'
+    sysctl_set: yes

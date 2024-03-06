@@ -1,0 +1,22 @@
+# docker-compose.yml
+---
+version: '3.7'
+services:
+    mariadb:
+        image: mariadb:latest
+        restart: always
+        environment:
+            MYSQL_RANDOM_ROOT_PASSWORD: '1'
+            MYSQL_DATABASE: wpdb
+            MYSQL_USER: wpuser
+            MYSQL_PASSWORD: wppw
+    wordpress:
+        image: wordpress:latest
+        restart: always
+        ports:
+            - 80:80
+        environment:
+            WORDPRESS_DB_NAME: wpdb
+            WORDPRESS_DB_USER: wpuser
+            WORDPRESS_DB_PASSWORD: wppw
+            WORDPRESS_DB_HOST: mariadb:3306

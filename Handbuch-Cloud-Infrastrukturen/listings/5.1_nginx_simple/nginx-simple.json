@@ -1,0 +1,48 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "Nginx-Webserver",
+    "Resources" : {
+	"MyWebServer" : {
+	    "Type": "AWS::EC2::Instance",
+	    "Properties" : {
+		"ImageId" : "ami-0cc0a36f626a4fdf5",
+		"InstanceType" : "t2.micro",
+		"KeyName": "myawskey",
+		"SecurityGroups" : [ { "Ref" : "MySecurityGroup" } ],
+		"UserData": { "Fn::Base64" : { "Fn::Join" : ["\n" , [
+		    "#!/bin/bash -e",
+		    "apt update && apt -y install nginx",
+		    "while [ ! -e /dev/xvdd ]; do sleep 10; done",
+		    "parted /dev/xvdd mklabel msdos",
+		    "parted /dev/xvdd mkpart primary 0% 100%",
+		    "mkfs.ext4 -m 0 /dev/xvdd1 && mount /dev/xvdd1 /mnt"
+		]]}}
+	    }
+	},
+	"MySecurityGroup" : {
+	    "Type" : "AWS::EC2::SecurityGroup",
+	    "Properties" : {
+		"GroupDescription" : "SSH und HTTP-Zugang",
+		"SecurityGroupIngress" : [
+		    { "IpProtocol" : "tcp", "FromPort" : 22, "ToPort" : 22, "CidrIp" : "0.0.0.0/0" },
+		    { "IpProtocol" : "tcp", "FromPort" : 80, "ToPort" : 80, "CidrIp" : "0.0.0.0/0" }
+		]
+	    }
+	},
+	"MyVolume" : {
+	    "Type" : "AWS::EC2::Volume",
+	    "Properties" : {
+		"Size" : "80",
+		"AvailabilityZone" : { "Fn::GetAtt" : [ "MyWebServer", "AvailabilityZone" ] }
+	    }
+	},
+	"MyAttachment" : {
+	    "Type" : "AWS::EC2::VolumeAttachment",
+	    "Properties" : {
+		"Device" : "/dev/sdd",
+		"InstanceId" : { "Ref" : "MyWebServer" },
+		"VolumeId" : { "Ref" : "MyVolume" }
+	    }
+	}
+    }
+}

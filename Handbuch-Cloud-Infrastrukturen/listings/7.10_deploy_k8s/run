@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export HCLOUD_TOKEN=aBl7AHgaJC3Pjiy5e2C8vCXgqDViXf8XE1hSb5rYmURuArMPLYK35uy06jb6Nt93
+
+rm -f config run-command ansible.log
+
+ansible-playbook -i inventory.py site.yml -u root --key-file ~/.ssh/hetznerkey

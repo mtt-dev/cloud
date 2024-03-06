@@ -1,0 +1,29 @@
+# mariadb-deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-deployment
+spec:
+  template:
+    metadata:
+      labels:
+        name: mariadb-pod
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:latest
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_DATABASE
+          value: wpdb
+        - name: MYSQL_PASSWORD
+          value: wppw
+        - name: MYSQL_RANDOM_ROOT_PASSWORD
+          value: "1"
+        - name: MYSQL_USER
+          value: wpuser
+  replicas: 1
+  selector:
+    matchLabels:
+      name: mariadb-pod
